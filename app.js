@@ -5,9 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors')
 
-const productsRoutes = require('./api/routes/products');
-const ordersRoutes = require('./api/routes/orders');
-const userRoutes = require('./api/routes/user');
+const authRoutes = require('./api/routes/auth');
 const workshopRoutes = require('./api/routes/worshops');
 const instructorRoutes = require('./api/routes/instructor');
 
@@ -20,7 +18,7 @@ mongoose.connect(url, {
 mongoose.Promise = global.Promise;
 
 app.use(morgan('dev'));
-app.use(cors({origin: '*'}))
+app.use(cors({origin: '*'}));
 /*
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -37,9 +35,7 @@ app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.use('/products', productsRoutes);
-app.use('/orders', ordersRoutes);
-app.use("/user", userRoutes);
+app.use('/auth', authRoutes);
 app.use("/workshops", workshopRoutes);
 app.use("/instructors", instructorRoutes);
 

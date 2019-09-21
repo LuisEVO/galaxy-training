@@ -7,17 +7,17 @@ const WorkshopController = require('../controllers/workshop');
 
 router.get("/", WorkshopController.getAll);
 
-router.post("/", WorkshopController.create);
+router.post("/", checkAuth, WorkshopController.create);
 
 router.get("/:id", WorkshopController.get);
 
-router.put("/:id", WorkshopController.update);
+router.put("/:id", checkAuth, WorkshopController.update);
 
-router.delete("/:id", WorkshopController.delete);
+router.delete("/:id", checkAuth, WorkshopController.delete);
 
-router.put("/poster/:id", upload.image.single('poster'), WorkshopController.updatePoster);
+router.put("/poster/:id", checkAuth, upload.image.single('poster'), WorkshopController.updatePoster);
 
-router.put("/temary/:id", upload.pdf.single('temary'), WorkshopController.updateTemary);
+router.put("/temary/:id", checkAuth, upload.pdf.single('temary'), WorkshopController.updateTemary);
 
 
 module.exports = router;

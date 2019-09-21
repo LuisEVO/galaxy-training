@@ -18,7 +18,7 @@ mongoose.connect(url, {
 mongoose.Promise = global.Promise;
 
 app.use(morgan('dev'));
-// app.use(cors({origin: '*'}));
+app.use(cors({origin: '*'}));
 
 /*
 app.use((req, res, next) => {

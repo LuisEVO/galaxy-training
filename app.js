@@ -20,6 +20,7 @@ mongoose.Promise = global.Promise;
 app.use(morgan('dev'));
 // app.use(cors({origin: '*'}));
 
+/*
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', '*');
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+*/
 
 app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));

@@ -56,12 +56,12 @@ exports.signIn = (req, res, next) => {
             });
           }
           if (result) {
-            const user = {
+            const payload = {
               email: user[0].email,
               userId: user[0]._id
             };
             const token = jwt.sign(
-              user,
+              payload,
               process.env.JWT_KEY,
               { expiresIn: "5h"}
             );

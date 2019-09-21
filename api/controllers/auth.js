@@ -16,7 +16,7 @@ exports.signUp = (req, res, next) => {
         } else {
           bcrypt.hash(req.body.password, 10, (err, hash) => {
             if (err) {
-              return res.status(500).json({error: err, message: 'Error Interno 101'});
+              return res.status(500).json({error: err, message: 'Error Interno', code: 101});
             } else {
               const user = new User({
                 _id: new mongoose.Types.ObjectId(),
@@ -31,8 +31,7 @@ exports.signUp = (req, res, next) => {
                     });
                 })
                 .catch(err => {
-                  console.log(err);
-                  res.status(500).json({error: err, message: 'Error Interno 102'});
+                  res.status(500).json({error: err, message: 'Error Interno', code: 102});
                 });
             }
           });
@@ -57,18 +56,16 @@ exports.signIn = (req, res, next) => {
             });
           }
           if (result) {
+            const user = {
+              email: user[0].email,
+              userId: user[0]._id
+            };
             const token = jwt.sign(
-              {
-                email: user[0].email,
-                userId: user[0]._id
-              },
+              user,
               process.env.JWT_KEY,
-              {
-                  expiresIn: "5h"
-              }
+              { expiresIn: "5h"}
             );
             return res.status(200).json({
-              message: "Usuario Autorizado",
               token: token
             });
           }
@@ -78,10 +75,10 @@ exports.signIn = (req, res, next) => {
         });
       })
       .catch(err => {
-        console.log(err);
         res.status(500).json({
-            message: 'Error Interno 201',
-            error: err
+            message: 'Error Interno',
+            error: err,
+            code: 201
         });
       });
 };

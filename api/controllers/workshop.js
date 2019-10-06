@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 const Workshop = require("../models/workshop");
+const moment = require('moment');
+
+const setTime = (stringDate, stringTime) => {
+  const date = moment(stringDate);
+  const time = moment(stringTime, 'HH:mm');
+
+  return date.set({hour: time.hour(), minute: time.minute()});
+}
 
 exports.getAll = (req, res, next) => {
     Workshop.find()
@@ -14,30 +22,34 @@ exports.getAll = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {
-      const workshop = new Workshop({
-        _id: mongoose.Types.ObjectId(),
-        instructor: req.body.instructor,
-        name: req.body.name,
-        description: req.body.description,
-        date: req.body.date,
-        start: req.body.start,
-        end: req.body.end
-      });
-      workshop.save()
+  const startDate = setTime(req.body.date, req.body.start);
+  const endDate = setTime(req.body.date, req.body.end);
+
+  const workshop = new Workshop({
+    _id: mongoose.Types.ObjectId(),
+    instructor: req.body.instructor,
+    name: req.body.name,
+    description: req.body.description,
+    date: req.body.date,
+    start: startDate,
+    end: endDate,
+    publish: req.body.publish
+  });
+  workshop.save()
+    .then(result => {
+      workshop
+        .populate('instructor')
+        .execPopulate()
         .then(result => {
-          workshop
-            .populate('instructor')
-            .execPopulate()
-            .then(result => {
-              res.status(201).json(result);
-            })
-            .catch(err => {
-                res.status(500).json({ error: err });
-            });
+          res.status(201).json(result);
         })
         .catch(err => {
             res.status(500).json({ error: err });
         });
+    })
+    .catch(err => {
+        res.status(500).json({ error: err });
+    });
 };
 
 exports.get = (req, res, next) => {
@@ -56,24 +68,28 @@ exports.get = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-    const _id = req.params.id;
-    const body = {
-      instructor: req.body.instructor,
-      name: req.body.name,
-      description: req.body.description,
-      date: req.body.date,
-      start: req.body.start,
-      end: req.body.end,
-    };
-    Workshop.findOneAndUpdate({ _id: _id }, { $set: body }, {new: true})
-      .populate('instructor')
-      .exec()
-      .then(doc => {
-        res.status(200).json(doc);
-      })
-      .catch(err => {
-        res.status(500).json({ error: err });
-      });
+  const startDate = setTime(req.body.date, req.body.start);
+  const endDate = setTime(req.body.date, req.body.end);
+
+  const _id = req.params.id;
+  const body = {
+    instructor: req.body.instructor,
+    name: req.body.name,
+    description: req.body.description,
+    date: req.body.date,
+    start: startDate,
+    end: endDate,
+    publish: req.body.publish
+  };
+  Workshop.findOneAndUpdate({ _id: _id }, { $set: body }, {new: true})
+    .populate('instructor')
+    .exec()
+    .then(doc => {
+      res.status(200).json(doc);
+    })
+    .catch(err => {
+      res.status(500).json({ error: err });
+    });
 };
 
 exports.delete = (req, res, next) => {

@@ -5,11 +5,11 @@ const upload = require('../middleware/upload');
 
 const InstructorController = require('../controllers/instructor');
 
-router.get("/", checkAuth, InstructorController.getAll);
+router.get("/", InstructorController.getAll);
 
 router.post("/", checkAuth, InstructorController.create);
 
-router.get("/:id", checkAuth, InstructorController.get);
+router.get("/:id", InstructorController.get);
 
 router.put("/:id", checkAuth, InstructorController.update);
 

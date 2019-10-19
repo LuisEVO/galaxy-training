@@ -8,6 +8,7 @@ const cors = require('cors')
 const authRoutes = require('./api/routes/auth');
 const workshopRoutes = require('./api/routes/worshops');
 const instructorRoutes = require('./api/routes/instructor');
+const participantRoutes = require('./api/routes/participant');
 
 const url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
 mongoose.connect(url, { 
@@ -38,6 +39,7 @@ app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use("/workshops", workshopRoutes);
 app.use("/instructors", instructorRoutes);
+app.use("/participants", participantRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');

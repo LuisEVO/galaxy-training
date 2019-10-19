@@ -19,5 +19,7 @@ router.put("/poster/:id", checkAuth, upload.image.single('poster'), WorkshopCont
 
 router.put("/temary/:id", checkAuth, upload.pdf.single('temary'), WorkshopController.updateTemary);
 
+router.get("/:id/participants", checkAuth, WorkshopController.getParticipants);
+
 
 module.exports = router;

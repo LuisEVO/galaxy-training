@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Workshop = require("../models/workshop");
+const Participant = require("../models/participant");
 const moment = require('moment');
 
 const setTime = (stringDate, stringTime) => {
@@ -138,4 +139,18 @@ exports.updateTemary = (req, res, next) => {
     .catch(err => {
       res.status(500).json({ error: err });
     });
+};
+
+
+
+exports.getParticipants = (req, res, next) => {
+  const workshop = req.params.id;
+  Participant.find({ workshop })
+      .exec()
+      .then(docs => {
+          res.status(200).json(docs)
+      })
+      .catch(err => {
+          res.status(500).json({ error: err });
+      });
 };

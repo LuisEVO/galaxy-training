@@ -11,13 +11,25 @@ exports.create = (req, res, next) => {
     user
   });
 
-  participant.save()
-  .then(result => {
+  Participant.findOne({ workshop, user })
+    .exec()
+    .then(doc => {
+      if (!doc) {
+        return participant.save()
+      } else {
+        throw new Error("already registered");
+      }
+    })
+    .then(result => {
+      return Participant.populate(result, { path: 'user', select: 'email names lastNames documentNumber'})
+    })
+    .then(result => {
       res.status(201).json(result);
-  })
-  .catch(err => {
-    res.status(500).json({ error: err });
-  });
+    })
+    .catch(err => {
+      res.status(500).json({ error: err });
+    });
+
 };
 
 exports.get = (req, res, next) => {
@@ -25,10 +37,11 @@ exports.get = (req, res, next) => {
   const user = req.userData.userId;
 
   Participant.findOne({ workshop, user })
+    .populate({ path: 'user', select: 'email names lastNames documentNumber'})
     .exec()
     .then(doc => {
       if (!doc) {
-        return res.status(404).json({ message: "Not found" });
+        return res.status(200).json(null);
       }
       res.status(200).json(doc);
     })

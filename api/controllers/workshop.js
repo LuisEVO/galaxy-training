@@ -146,6 +146,7 @@ exports.updateTemary = (req, res, next) => {
 exports.getParticipants = (req, res, next) => {
   const workshop = req.params.id;
   Participant.find({ workshop })
+      .populate('user', 'email names lastNames documentNumber')
       .exec()
       .then(docs => {
           res.status(200).json(docs)

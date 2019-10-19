@@ -7,4 +7,6 @@ const participantSchema = mongoose.Schema({
     canceled: { type: Boolean, default: false }
 }, {timestamps: true, versionKey: false });
 
+participantSchema.index({ workshop: 1, user: 1 }, { unique: true })
+
 module.exports = mongoose.model('Participant', participantSchema);

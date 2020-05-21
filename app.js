@@ -3,15 +3,18 @@ const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const cors = require('cors')
 
 const authRoutes = require('./api/routes/auth');
 const workshopRoutes = require('./api/routes/worshops');
 const instructorRoutes = require('./api/routes/instructor');
 const participantRoutes = require('./api/routes/participant');
 
-// const url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
-const url = 'mongodb://localhost/galaxy';
+let url;
+if (process.env.production) {
+    url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
+} else {
+    url = 'mongodb://localhost/galaxy';
+}
 
 mongoose.connect(url, {
     useCreateIndex: true,
@@ -21,7 +24,6 @@ mongoose.connect(url, {
 mongoose.Promise = global.Promise;
 
 app.use(morgan('dev'));
-// app.use(cors({origin: '*'}));
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -32,7 +34,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-
 
 app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -57,4 +58,5 @@ app.use((error, req, res, next) => {
         }
     })
 });
+
 module.exports = app;

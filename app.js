@@ -3,15 +3,17 @@ const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors')
+// const cors = require('cors')
 
 const authRoutes = require('./api/routes/auth');
 const workshopRoutes = require('./api/routes/worshops');
 const instructorRoutes = require('./api/routes/instructor');
 const participantRoutes = require('./api/routes/participant');
 
-const url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
-mongoose.connect(url, { 
+// const url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
+const url = 'mongodb://localhost/galaxy';
+
+mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
     useNewUrlParser: true

@@ -1,18 +1,10 @@
 const mongoose = require("mongoose");
 const Workshop = require("../models/workshop");
 const Participant = require("../models/participant");
-const moment = require('moment');
-
-const setTime = (stringDate, stringTime) => {
-  const date = moment(stringDate);
-  const time = moment(stringTime, 'HH:mm');
-
-  return date.set({hour: time.hour(), minute: time.minute()});
-}
 
 exports.getAll = (req, res, next) => {
     Workshop.find()
-        .populate('instructor')
+        .populate('instructor', 'fullName -_id')
         .exec()
         .then(docs => {
             res.status(200).json(docs)
@@ -23,19 +15,19 @@ exports.getAll = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {
-  const startDate = setTime(req.body.date, req.body.start);
-  const endDate = setTime(req.body.date, req.body.end);
-
   const workshop = new Workshop({
     _id: mongoose.Types.ObjectId(),
     instructor: req.body.instructor,
     name: req.body.name,
     description: req.body.description,
     date: req.body.date,
-    start: startDate,
-    end: endDate,
-    publish: req.body.publish
+    start: req.body.start,
+    startMeridiem: req.body.startMeridiem,
+    end: req.body.end,
+    endMeridiem: req.body.endMeridiem,
+    publish: true
   });
+
   workshop.save()
     .then(result => {
       workshop
@@ -69,18 +61,17 @@ exports.get = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-  const startDate = setTime(req.body.date, req.body.start);
-  const endDate = setTime(req.body.date, req.body.end);
-
   const _id = req.params.id;
   const body = {
-    instructor: req.body.instructor,
-    name: req.body.name,
-    description: req.body.description,
-    date: req.body.date,
-    start: startDate,
-    end: endDate,
-    publish: req.body.publish
+      instructor: req.body.instructor,
+      name: req.body.name,
+      description: req.body.description,
+      date: req.body.date,
+      start: req.body.start,
+      startMeridiem: req.body.startMeridiem,
+      end: req.body.end,
+      endMeridiem: req.body.endMeridiem,
+      publish: true
   };
   Workshop.findOneAndUpdate({ _id: _id }, { $set: body }, {new: true})
     .populate('instructor')
@@ -95,22 +86,36 @@ exports.update = (req, res, next) => {
 
 exports.delete = (req, res, next) => {
     const _id = req.params.id;
-    Workshop.deleteOne({ _id: _id })
-        .exec()
-        .then(result => {
-            res.status(200).json({
-                _id: _id,
+    const protected = [
+        '5ec47a2efe8c1b52bc8514d8',
+        '5ec47a65fe8c1b52bc8514d9',
+        '5ec47aa4fe8c1b52bc8514da',
+        '5ec47af7fe8c1b52bc8514db',
+        '5ec47b2cfe8c1b52bc8514dc'
+    ];
+
+    if (protected.includes(_id)) {
+        res.status(401).json({ error: "Este id esta protegido" });
+    } else {
+        Workshop.deleteOne({ _id: _id })
+            .exec()
+            .then(result => {
+                res.status(200).json({
+                    _id: _id,
+                });
+            })
+            .catch(err => {
+                res.status(500).json({ error: err });
             });
-        })
-        .catch(err => {
-            res.status(500).json({ error: err });
-        });
+    }
+
+
 };
 
 exports.updatePoster = (req, res, next) => {
   const _id = req.params.id;
   const body = {
-      poster: req.file.path
+      poster: '/uploads/' + req.file.filename
   };
   Workshop.findOneAndUpdate({ _id: _id }, { $set: body }, {new: true})
     .exec()

@@ -7,12 +7,12 @@ const InstructorController = require('../controllers/instructor');
 
 router.get("/", InstructorController.getAll);
 
-router.post("/", checkAuth, InstructorController.create);
+router.post("/", InstructorController.create);
 
 router.get("/:id", InstructorController.get);
 
-router.put("/:id", checkAuth, InstructorController.update);
+router.put("/:id", InstructorController.update);
 
-router.delete("/:id", checkAuth, InstructorController.delete);
+router.delete("/:id", InstructorController.delete);
 
 module.exports = router;

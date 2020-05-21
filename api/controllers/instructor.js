@@ -15,9 +15,7 @@ exports.getAll = (req, res, next) => {
 exports.create = (req, res, next) => {
       const instructor = new Instructor({
         _id: mongoose.Types.ObjectId(),
-        title: req.body.title,
-        names: req.body.names,
-        lastNames: req.body.lastNames,
+        fullName: req.body.fullName,
         mail: req.body.mail,
       });
       instructor.save()
@@ -46,9 +44,7 @@ exports.get = (req, res, next) => {
 exports.update = (req, res, next) => {
     const _id = req.params.id;
     const body = {
-        title: req.body.title,
-        names: req.body.names,
-        lastNames: req.body.lastNames,
+        fullName: req.body.fullName,
         mail: req.body.mail,
     };
     Instructor.findOneAndUpdate({ _id: _id }, { $set: body }, {new: true})

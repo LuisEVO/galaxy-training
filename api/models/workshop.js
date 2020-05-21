@@ -6,11 +6,13 @@ const workshopSchema = mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     date: { type: Date, required: true },
-    start: { type: Date, required: true },
-    end: { type: Date, required: true },
+    start: { type: Number, required: true },
+    startMeridiem: { type: String, required: true },
+    end: { type: Number, required: true },
+    endMeridiem: { type: String, required: true },
     poster: { type: String },
     temary: { type: String },
     publish: { type: Boolean }
-}, {timestamps: true, versionKey: false });
+}, {versionKey: false });
 
 module.exports = mongoose.model('Workshop', workshopSchema);

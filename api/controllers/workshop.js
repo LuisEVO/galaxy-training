@@ -34,6 +34,8 @@ exports.create = (req, res, next) => {
         .populate('instructor')
         .execPopulate()
         .then(result => {
+          const io = req.app.get('socketio');
+          io.emit('workshop:created', result);
           res.status(201).json(result);
         })
         .catch(err => {
@@ -47,7 +49,7 @@ exports.create = (req, res, next) => {
 
 exports.get = (req, res, next) => {
   Workshop.findById(req.params.id)
-    .populate('instructor')
+    .populate('instructor', 'fullName _id')
     .exec()
     .then(doc => {
       if (!doc) {

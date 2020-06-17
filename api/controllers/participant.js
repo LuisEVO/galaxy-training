@@ -3,31 +3,23 @@ const Participant = require("../models/participant");
 
 exports.create = (req, res, next) => {
   const workshop = req.body.workshop;
-  const user = req.userData.userId;
+  const user = req.userData.id;
 
-  const participant = new Participant({
-    _id: mongoose.Types.ObjectId(),
+  const participant = {
     workshop,
-    user
-  });
+    user,
+    canceled: !req.body.register
+  };
 
-  Participant.findOne({ workshop, user })
+  console.log(participant);
+
+  Participant.findOneAndUpdate({ workshop, user }, participant, { upsert: true })
     .exec()
     .then(doc => {
-      if (!doc) {
-        return participant.save()
-      } else {
-        throw new Error("already registered");
-      }
-    })
-    .then(result => {
-      return Participant.populate(result, { path: 'user', select: 'email names lastNames documentNumber'})
-    })
-    .then(result => {
-      res.status(201).json(result);
+      return res.status(200).json({ registered: req.body.register });
     })
     .catch(err => {
-      res.status(500).json({ error: err });
+      return res.status(500).json({ error: err });
     });
 
 };

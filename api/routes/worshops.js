@@ -2,24 +2,27 @@ const express = require("express");
 const router = express.Router();
 const upload = require('../middleware/upload');
 const idProtected = require('../middleware/id-protected');
+const checkAuth = require('../middleware/check-auth');
 
 const WorkshopController = require('../controllers/workshop');
 
-router.get("/", WorkshopController.getAll);
+router.get("/portal", WorkshopController.getAllPublic);
 
-router.post("/", WorkshopController.create);
+router.get("/", checkAuth, WorkshopController.getAllPrivate);
 
-router.get("/:id", WorkshopController.get);
+router.post("/", checkAuth, WorkshopController.create);
 
-router.put("/:id", idProtected, WorkshopController.update);
+router.get("/:id", checkAuth, WorkshopController.get);
 
-router.delete("/:id", idProtected, WorkshopController.delete);
+router.put("/:id", checkAuth, idProtected, WorkshopController.update);
 
-router.put("/:id/poster", upload.image.single('poster'), WorkshopController.updatePoster);
+router.delete("/:id", checkAuth, idProtected, WorkshopController.delete);
+
+router.put("/:id/poster", checkAuth, idProtected, upload.image.single('poster'), WorkshopController.updatePoster);
 
 router.put("/:id/temary", upload.pdf.single('temary'), WorkshopController.updateTemary);
 
-router.get("/:id/participants", WorkshopController.getParticipants);
+router.get("/:id/participants", checkAuth, WorkshopController.getParticipants);
 
 
 module.exports = router;

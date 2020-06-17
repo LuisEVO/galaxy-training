@@ -1,17 +1,53 @@
 const mongoose = require("mongoose");
 const Workshop = require("../models/workshop");
 const Participant = require("../models/participant");
+const Instructor = require("../models/instructor");
+const jwt = require('jsonwebtoken');
 
-exports.getAll = (req, res, next) => {
-    Workshop.find()
-        .populate('instructor', 'fullName -_id')
-        .exec()
-        .then(docs => {
-            res.status(200).json(docs)
-        })
-        .catch(err => {
-            res.status(500).json({ error: err });
-        });
+exports.getAllPublic = async (req, res, next) => {
+  const token = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
+  const userData = token ? jwt.verify(token, process.env.JWT_KEY) : null;
+  const workshops = await Workshop.find().populate('instructor', 'fullName _id').exec();
+
+  if (userData) {
+    const participants = await Participant.find({ user: userData.id, canceled: false }).select('workshop');
+    const workshopsRegistered = participants.map(participant => String(participant.workshop));
+
+    const workshopsClone = workshops.map(workshop => {
+      return {
+        ...workshop._doc,
+        registered: workshopsRegistered.includes(String(workshop._id))
+      }
+    });
+
+    res.status(200).json(workshopsClone)
+
+  }
+
+  res.status(200).json(workshops)
+
+};
+
+exports.getAllPrivate = async (req, res, next) => {
+  let workshops;
+
+  if (req.userData && req.userData.rol === 'INSTRUCTOR') {
+    const items = await Instructor.find({'mail': req.userData.email }).select('_id');
+    const ids = items.map(item => item._id);
+    workshops = Workshop.find()
+      .where('instructor').in(ids)
+  } else {
+    workshops = Workshop.find()
+  }
+  workshops
+    .populate('instructor', 'fullName _id')
+    .exec()
+    .then(docs => {
+      res.status(200).json(docs)
+    })
+    .catch(err => {
+      res.status(500).json({ error: err });
+    });
 };
 
 exports.create = (req, res, next) => {
@@ -97,7 +133,7 @@ exports.delete = (req, res, next) => {
     ];
 
     if (protected.includes(_id)) {
-        res.status(401).json({ error: "Este id esta protegido" });
+        res.status(403).json({ error: "Este id esta protegido" });
     } else {
         Workshop.deleteOne({ _id: _id })
             .exec()

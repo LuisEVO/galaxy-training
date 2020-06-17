@@ -48,21 +48,23 @@ exports.signIn = (req, res, next) => {
       .exec()
       .then(user => {
         if (user.length < 1) {
-          return res.status(401).json({
+          return res.status(404).json({
             message: `El correo ${ email } no se encuetra registrado`
         });
         }
         bcrypt.compare(req.body.password, user[0].password, (err, result) => {
           if (err) {
-            return res.status(401).json({
-              message: "La contraseña ingresada es incorrecta"
+            return res.status(500).json({
+              message: "Error Interno, en la validación de la contraseña"
             });
           }
           if (result) {
             const payload = {
               email: user[0].email,
-              userId: user[0]._id,
-              userRol: user[0].rol
+              id: user[0]._id,
+              names: user[0].names,
+              lastNames: user[0].lastNames,
+              rol: user[0].rol
             };
             const token = jwt.sign(
               payload,
@@ -73,7 +75,7 @@ exports.signIn = (req, res, next) => {
               token: token
             });
           }
-          res.status(401).json({
+          res.status(404).json({
             message: "La contraseña ingresada es incorrecta"
           });
         });
@@ -86,4 +88,3 @@ exports.signIn = (req, res, next) => {
         });
       });
 };
-  

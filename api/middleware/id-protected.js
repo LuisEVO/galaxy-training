@@ -11,11 +11,11 @@ module.exports = (req, res, next) => {
         ];
 
         if (ids.includes(_id)) {
-            res.status(401).json({ message: "Este id esta protegido" });
+            res.status(403).json({ message: "Este id esta protegido" });
         } else {
             next();
         }
     } catch (error) {
-        return res.status(401).json({ message: 'Debe enviar el parametro id' });
+        return res.status(403).json({ message: 'Debe enviar el parametro id' });
     }
 };

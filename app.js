@@ -9,12 +9,7 @@ const workshopRoutes = require('./api/routes/worshops');
 const instructorRoutes = require('./api/routes/instructor');
 const participantRoutes = require('./api/routes/participant');
 
-let url;
-if (process.env.production) {
-    url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
-} else {
-    url = 'mongodb://localhost/galaxy';
-}
+const url = 'mongodb+srv://admin:' + process.env.MONGO_ATLAS_PW + '@node-rest-9ojk7.mongodb.net/test?retryWrites=true&w=majority';
 
 mongoose.connect(url, {
     useCreateIndex: true,

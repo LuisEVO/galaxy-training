@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const checkAuth = require('../middleware/check-auth');
-const upload = require('../middleware/upload');
 
 const InstructorController = require('../controllers/instructor');
 
-router.get("/", InstructorController.getAll);
+router.get("/", checkAuth, InstructorController.getAll);
 
-router.post("/", InstructorController.create);
+router.post("/", checkAuth, InstructorController.create);
 
-router.get("/:id", InstructorController.get);
+router.get("/:id", checkAuth, InstructorController.get);
 
-router.put("/:id", InstructorController.update);
+router.put("/:id", checkAuth, InstructorController.update);
 
-router.delete("/:id", InstructorController.delete);
+router.delete("/:id", checkAuth, InstructorController.delete);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 exports.getAllPublic = async (req, res, next) => {
   const token = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
   const userData = token ? jwt.verify(token, process.env.JWT_KEY) : null;
-  const workshops = await Workshop.find().populate('instructor', 'fullName _id').exec();
+  const workshops = await Workshop.find().sort('-date').populate('instructor', 'fullName _id').exec();
 
   if (userData) {
     const participants = await Participant.find({ user: userData.id, canceled: false }).select('workshop');
@@ -197,4 +197,32 @@ exports.getParticipants = (req, res, next) => {
       .catch(err => {
           res.status(500).json({ error: err });
       });
+};
+
+exports.getAllParticipants = async (req, res, next) => {
+  // const start = new Date(2020, 4, 5);
+  // const end = new Date(2020, 4, 14);
+  // const ws = await Workshop.find({'date': {"$gte": start, "$lt": end}}).select('_id name').where('date').sort('-date').limit(3);
+
+  let ws;
+  const start = req.query.start;
+  const end = req.query.end;
+
+  if (start && end) {
+    ws = await Workshop.find({'date': {"$gte": start, "$lt": end}}).select('_id name').where('date').sort('-date');
+  } else if (start) {
+    ws = await Workshop.find({'date': {"$gte": start }}).select('_id name').where('date').sort('-date');
+  } else {
+    ws = await Workshop.find().select('_id name').where('date').sort('-date').limit(3);
+  }
+
+  const ps = await Participant.find().select('_id workshop').where('workshop').in(ws.map(item => item._id));
+
+  const data = ws.map(wsItem => {
+    return {
+      workshop: wsItem,
+      participants: ps.filter(psItem => String(psItem.workshop) === String(wsItem._id)).length
+    }
+  });
+  res.status(200).json(data)
 };

@@ -8,6 +8,8 @@ const WorkshopController = require('../controllers/workshop');
 
 router.get("/portal", WorkshopController.getAllPublic);
 
+router.get("/participants", checkAuth, WorkshopController.getAllParticipants);
+
 router.get("/", checkAuth, WorkshopController.getAllPrivate);
 
 router.post("/", checkAuth, WorkshopController.create);
@@ -23,6 +25,7 @@ router.put("/:id/poster", checkAuth, idProtected, upload.image.single('poster'),
 router.put("/:id/temary", upload.pdf.single('temary'), WorkshopController.updateTemary);
 
 router.get("/:id/participants", checkAuth, WorkshopController.getParticipants);
+
 
 
 module.exports = router;

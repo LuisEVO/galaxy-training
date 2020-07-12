@@ -10,21 +10,21 @@ router.get("/portal", WorkshopController.getAllPublic);
 
 router.get("/participants", checkAuth, WorkshopController.getAllParticipants);
 
-router.get("/", checkAuth, WorkshopController.getAllPrivate);
+router.get("/", WorkshopController.getAllPrivate);
 
-router.post("/", checkAuth, WorkshopController.create);
+router.post("/", WorkshopController.create);
 
-router.get("/:id", checkAuth, WorkshopController.get);
+router.get("/:id", WorkshopController.get);
 
-router.put("/:id", checkAuth, idProtected, WorkshopController.update);
+router.put("/:id", idProtected, WorkshopController.update);
 
-router.delete("/:id", checkAuth, idProtected, WorkshopController.delete);
+router.delete("/:id", idProtected, WorkshopController.delete);
 
-router.put("/:id/poster", checkAuth, idProtected, upload.image.single('poster'), WorkshopController.updatePoster);
+router.put("/:id/poster", idProtected, upload.image.single('poster'), WorkshopController.updatePoster);
 
-router.put("/:id/temary", upload.pdf.single('temary'), WorkshopController.updateTemary);
+// router.put("/:id/temary", upload.pdf.single('temary'), WorkshopController.updateTemary);
 
-router.get("/:id/participants", checkAuth, WorkshopController.getParticipants);
+router.get("/:id/participants", WorkshopController.getParticipants);
 
 
 
